@@ -114,8 +114,7 @@ const App = () => {
       if (ballY + ballDy < BALL_RADIUS) {
         setBallDy(-ballDy);
       } else if (ballY + ballDy > CANVAS_HEIGHT - BALL_RADIUS) {
-        // Game over (ball fell off the screen)
-        document.location.reload();
+        setBallDy(-ballDy);
       }
     };
 
