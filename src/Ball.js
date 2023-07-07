@@ -7,8 +7,8 @@ const Ball = ({ x, y, radius }) => {
     top: y - radius,
     width: radius * 2,
     height: radius * 2,
-    borderRadius: '50%',
     backgroundColor: 'red',
+    borderRadius: '50%',
   };
 
   return <div style={style}></div>;

@@ -1,9 +1,19 @@
 .App {
   text-align: center;
+  margin-top: 30px;
+}
+
+.canvas-container {
+  position: relative;
+  width: 480px;
+  height: 320px;
+  margin: 0 auto;
+  border: 1px solid black;
 }
 
 canvas {
-  border: 1px solid #000;
-  display: block;
-  margin: 20px auto;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+

@@ -4,9 +4,9 @@ const Paddle = ({ x, y, width, height }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === 'ArrowLeft') {
-        x((prevX) => prevX - 5);
+        x((prevX) => Math.max(0, prevX - 5));
       } else if (e.code === 'ArrowRight') {
-        x((prevX) => prevX + 5);
+        x((prevX) => Math.min(480 - width, prevX + 5));
       }
     };
 
@@ -15,7 +15,7 @@ const Paddle = ({ x, y, width, height }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [x]);
+  }, [x, width]);
 
   const style = {
     position: 'absolute',

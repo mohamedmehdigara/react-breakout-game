@@ -33,7 +33,7 @@ const App = () => {
         for (let col = 0; col < BRICK_COLUMNS; col++) {
           brickArr.push({
             x: col * BRICK_WIDTH,
-            y: row * BRICK_HEIGHT,
+            y: row * BRICK_HEIGHT + 30,
             width: BRICK_WIDTH,
             height: BRICK_HEIGHT,
             visible: true,
@@ -62,7 +62,7 @@ const App = () => {
 
       // Draw paddle
       ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT);
+      ctx.rect(paddleX, CANVAS_HEIGHT - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT);
       ctx.fillStyle = 'blue';
       ctx.fill();
       ctx.closePath();
@@ -75,12 +75,12 @@ const App = () => {
       ctx.closePath();
 
       // Move the ball
-      setBallX(ballX + ballDx);
-      setBallY(ballY + ballDy);
+      setBallX((prevBallX) => prevBallX + ballDx);
+      setBallY((prevBallY) => prevBallY + ballDy);
 
       // Collision detection with paddle
       if (
-        ballY + ballDy > canvas.height - PADDLE_HEIGHT - BALL_RADIUS &&
+        ballY + ballDy > CANVAS_HEIGHT - PADDLE_HEIGHT - BALL_RADIUS &&
         ballX > paddleX &&
         ballX < paddleX + PADDLE_WIDTH
       ) {
@@ -108,12 +108,12 @@ const App = () => {
       });
 
       // Collision detection with walls
-      if (ballX + ballDx > canvas.width - BALL_RADIUS || ballX + ballDx < BALL_RADIUS) {
+      if (ballX + ballDx > CANVAS_WIDTH - BALL_RADIUS || ballX + ballDx < BALL_RADIUS) {
         setBallDx(-ballDx);
       }
       if (ballY + ballDy < BALL_RADIUS) {
         setBallDy(-ballDy);
-      } else if (ballY + ballDy > canvas.height - BALL_RADIUS) {
+      } else if (ballY + ballDy > CANVAS_HEIGHT - BALL_RADIUS) {
         // Game over (ball fell off the screen)
         document.location.reload();
       }
@@ -124,12 +124,37 @@ const App = () => {
     return () => {
       clearInterval(gameLoop);
     };
-  }, [ballX, ballY, ballDx, ballDy, paddleX, bricks, score]);
+  }, [paddleX, ballX, ballY, ballDx, ballDy, bricks, score]);
+
+  const handleKeyDown = (e) => {
+    if (e.code === 'ArrowLeft') {
+      setPaddleX((prevX) => Math.max(0, prevX - 5));
+    } else if (e.code === 'ArrowRight') {
+      setPaddleX((prevX) => Math.min(CANVAS_WIDTH - PADDLE_WIDTH, prevX + 5));
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="App">
       <div>Score: {score}</div>
-      <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT}></canvas>
+      <div className="canvas-container">
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          tabIndex="0"
+          style={{ outline: 'none' }}
+        ></canvas>
+        <Paddle x={paddleX} y={CANVAS_HEIGHT - PADDLE_HEIGHT} width={PADDLE_WIDTH} height={PADDLE_HEIGHT} />
+        <Ball x={ballX} y={ballY} radius={BALL_RADIUS} />
+      </div>
     </div>
   );
 };
