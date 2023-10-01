@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Paddle from './Paddle';
 import Ball from './Ball';
 import './App.css';
+import Brick from './Brick';
 
 const CANVAS_WIDTH = 480;
 const CANVAS_HEIGHT = 320;
@@ -13,6 +14,8 @@ const BRICK_COLUMNS = 8;
 const BRICK_WIDTH = CANVAS_WIDTH / BRICK_COLUMNS;
 const BRICK_HEIGHT = 20;
 
+
+
 const App = () => {
   const canvasRef = useRef(null);
   const [paddleX, setPaddleX] = useState((CANVAS_WIDTH - PADDLE_WIDTH) / 2);
@@ -22,6 +25,11 @@ const App = () => {
   const [ballDy, setBallDy] = useState(-2);
   const [score, setScore] = useState(0);
   const [bricks, setBricks] = useState([]);
+  const bricksData = [
+    { id: 1, width: 60, height: 20, color: 'red' },
+    { id: 2, width: 60, height: 20, color: 'blue' },
+    // Add more bricks data here
+  ];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -141,6 +149,7 @@ const App = () => {
   }, []);
 
   return (
+
     <div className="App">
       <div>Score: {score}</div>
       <div className="canvas-container">
@@ -152,6 +161,10 @@ const App = () => {
           style={{ outline: 'none' }}
         ></canvas>
         <Paddle x={paddleX} y={CANVAS_HEIGHT - PADDLE_HEIGHT} width={PADDLE_WIDTH} height={PADDLE_HEIGHT} />
+        {bricksData.map((brick) => (
+          <Brick key={brick.id} width={brick.width} height={brick.height} color={brick.color} />
+        ))}
+       
         <Ball x={ballX} y={ballY} radius={BALL_RADIUS} />
       </div>
     </div>

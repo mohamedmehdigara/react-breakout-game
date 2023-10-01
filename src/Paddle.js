@@ -1,4 +1,14 @@
 import React, { useEffect } from 'react';
+import styled from 'styled-components';
+
+const PaddleContainer = styled.div`
+  position: absolute;
+  left: ${props => props.x}px;
+  top: ${props => props.y}px;
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  background-color: blue;
+`;
 
 const Paddle = ({ x, y, width, height }) => {
   useEffect(() => {
@@ -17,16 +27,7 @@ const Paddle = ({ x, y, width, height }) => {
     };
   }, [x, width]);
 
-  const style = {
-    position: 'absolute',
-    left: x,
-    top: y,
-    width: width,
-    height: height,
-    backgroundColor: 'blue',
-  };
-
-  return <div style={style}></div>;
+  return <PaddleContainer x={x} y={y} width={width} height={height} />;
 };
 
 export default Paddle;
