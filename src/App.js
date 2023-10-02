@@ -24,26 +24,23 @@ const App = () => {
       } else if (e.code === 'ArrowRight') {
         setPaddleX((prevX) => Math.min(400, prevX + 10));
       } else if (e.code === 'Space') {
-        // Invert the vertical speed to make the ball bounce up and down when hitting Space
         setBallSpeedY((prevY) => -prevY);
       }
     };
 
     const updateBallPosition = () => {
-      // Update ball position based on its speed
       setBallX((prevX) => prevX + ballSpeedX);
       setBallY((prevY) => prevY + ballSpeedY);
 
-      // Check for boundary collisions
       if (ballX < 0 || ballX > 480) {
-        setBallSpeedX((prevSpeedX) => -prevSpeedX); // Bounce off left and right boundaries
+        setBallSpeedX((prevSpeedX) => -prevSpeedX);
       }
       if (ballY < 0 || ballY > 640) {
-        setBallSpeedY((prevSpeedY) => -prevSpeedY); // Bounce off top and bottom boundaries
+        setBallSpeedY((prevSpeedY) => -prevSpeedY);
       }
     };
 
-    const gameLoop = setInterval(updateBallPosition, 20); // Adjust the interval as needed
+    const gameLoop = setInterval(updateBallPosition, 20);
 
     document.addEventListener('keydown', handleKeyDown);
 
@@ -56,14 +53,13 @@ const App = () => {
   const bricksData = [
     { id: 1, width: 60, height: 20, color: 'red' },
     { id: 2, width: 60, height: 20, color: 'blue' },
-    // Add more bricks data here
   ];
 
   return (
     <div>
       <h1>Breakout Game</h1>
       <GameContainer>
-        <Paddle x={paddleX} y={600} width={80} height={10} />
+      <Paddle x={setPaddleX} y={600} width={80} height={10} />
         {bricksData.map((brick) => (
           <Brick key={brick.id} width={brick.width} height={brick.height} color={brick.color} />
         ))}
@@ -72,7 +68,7 @@ const App = () => {
             position: 'absolute',
             left: ballX,
             top: ballY,
-            width: 10, // Adjust the ball size as needed
+            width: 10,
             height: 10,
             backgroundColor: 'black',
             borderRadius: '50%',

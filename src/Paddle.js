@@ -1,22 +1,12 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
-
-const PaddleContainer = styled.div`
-  position: absolute;
-  left: ${props => props.x}px;
-  top: ${props => props.y}px;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
-  background-color: blue;
-`;
 
 const Paddle = ({ x, y, width, height }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === 'ArrowLeft') {
-        x((prevX) => Math.max(0, prevX - 5));
+        x((prevX) => Math.max(0, prevX - 5)); // Use x as a function to update the paddle's position
       } else if (e.code === 'ArrowRight') {
-        x((prevX) => Math.min(480 - width, prevX + 5));
+        x((prevX) => Math.min(480 - width, prevX + 5)); // Use x as a function to update the paddle's position
       }
     };
 
@@ -27,7 +17,16 @@ const Paddle = ({ x, y, width, height }) => {
     };
   }, [x, width]);
 
-  return <PaddleContainer x={x} y={y} width={width} height={height} />;
+  const style = {
+    position: 'absolute',
+    left: x,
+    top: y,
+    width: width,
+    height: height,
+    backgroundColor: 'blue',
+  };
+
+  return <div style={style}></div>;
 };
 
 export default Paddle;
