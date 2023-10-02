@@ -16,6 +16,7 @@ const App = () => {
   const [ballY, setBallY] = useState(300);
   const [ballSpeedX, setBallSpeedX] = useState(5);
   const [ballSpeedY, setBallSpeedY] = useState(5);
+  const [ballDropped, setBallDropped] = useState(false); // Track if the ball has dropped below the paddle
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -23,20 +24,41 @@ const App = () => {
         setPaddleX((prevX) => Math.max(0, prevX - 10));
       } else if (e.code === 'ArrowRight') {
         setPaddleX((prevX) => Math.min(400, prevX + 10));
-      } else if (e.code === 'Space') {
-        setBallSpeedY((prevY) => -prevY);
       }
     };
 
     const updateBallPosition = () => {
-      setBallX((prevX) => prevX + ballSpeedX);
-      setBallY((prevY) => prevY + ballSpeedY);
+      if (!ballDropped) {
+        // If the ball has not dropped, update its position based on speed
+        setBallX((prevX) => prevX + ballSpeedX);
+        setBallY((prevY) => prevY + ballSpeedY);
 
-      if (ballX < 0 || ballX > 480) {
-        setBallSpeedX((prevSpeedX) => -prevSpeedX);
-      }
-      if (ballY < 0 || ballY > 640) {
-        setBallSpeedY((prevSpeedY) => -prevSpeedY);
+        // Check for boundary collisions
+        if (ballX < 0 || ballX > 480) {
+          setBallSpeedX((prevSpeedX) => -prevSpeedX);
+        }
+
+        // If the ball reaches the bottom, bounce it back up
+        if (ballY > 640) {
+          setBallSpeedY((prevSpeedY) => -prevSpeedY);
+          setBallDropped(true);
+        }
+
+        // Check for paddle collision
+        if (
+          ballY + 10 >= 600 && // Ball is at or below the top of the paddle
+          ballY + 10 <= 610 && // Ball is at or above the bottom of the paddle
+          ballX + 10 >= paddleX && // Ball is to the right of the left edge of the paddle
+          ballX <= paddleX + 80 // Ball is to the left of the right edge of the paddle
+        ) {
+          setBallSpeedY((prevSpeedY) => -prevSpeedY); // Bounce the ball back up
+        }
+      } else {
+        // If the ball has dropped below the paddle, reset it to the top
+        setBallX(240);
+        setBallY(0);
+        setBallSpeedY(5);
+        setBallDropped(false);
       }
     };
 
@@ -48,7 +70,7 @@ const App = () => {
       clearInterval(gameLoop);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [ballX, ballY, ballSpeedX, ballSpeedY]);
+  }, [ballX, ballY, ballSpeedX, ballSpeedY, ballDropped, paddleX]);
 
   const bricksData = [
     { id: 1, width: 60, height: 20, color: 'red' },
@@ -59,7 +81,7 @@ const App = () => {
     <div>
       <h1>Breakout Game</h1>
       <GameContainer>
-      <Paddle x={setPaddleX} y={600} width={80} height={10} />
+        <Paddle x={paddleX} y={600} width={80} height={10} />
         {bricksData.map((brick) => (
           <Brick key={brick.id} width={brick.width} height={brick.height} color={brick.color} />
         ))}
