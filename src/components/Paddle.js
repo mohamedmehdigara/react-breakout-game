@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 
-const Paddle = ({ x, y, width, height }) => {
+const Paddle = ({ x, setPaddleX, width, height }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === 'ArrowLeft') {
-        x((prevX) => Math.max(0, prevX - 5)); // Use x as a function to update the paddle's position
+        setPaddleX((prevX) => Math.max(0, prevX - 5));
       } else if (e.code === 'ArrowRight') {
-        x((prevX) => Math.min(480 - width, prevX + 5)); // Use x as a function to update the paddle's position
+        setPaddleX((prevX) => Math.min(480 - width, prevX + 5));
       }
     };
 
@@ -15,12 +15,12 @@ const Paddle = ({ x, y, width, height }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [x, width]);
+  }, [setPaddleX, width]);
 
   const style = {
     position: 'absolute',
     left: x,
-    top: y,
+    top: 600, // You can use a fixed value for the Y position if the paddle doesn't need to move vertically
     width: width,
     height: height,
     backgroundColor: 'blue',

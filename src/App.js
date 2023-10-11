@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Paddle from './Paddle';
-import Brick from './Brick';
+import Paddle from './components/Paddle';
+import Brick from './components/Brick';
 
 const GameContainer = styled.div`
   position: relative;
@@ -11,36 +11,18 @@ const GameContainer = styled.div`
 `;
 
 const App = () => {
-  // Define initial game state
-  const initialGameState = {
-    paddleX: 200,
-    ballX: 240,
-    ballY: 100,
-    ballSpeedX: 1,
-    ballSpeedY: 1, // Adjust the value to make the ball fall more slowly
-    lives: 3,
-    score: 0,
-    bricks: [
-      { id: 1, x: 50, y: 50, width: 60, height: 20, color: 'red' },
-      { id: 2, x: 150, y: 50, width: 60, height: 20, color: 'blue' },
-      // Add more bricks here
-    ],
-  };
-  
-
-  const [gameState, setGameState] = useState(initialGameState);
-
-  // Destructure game state for easier access
-  const {
-    paddleX,
-    ballX,
-    ballY,
-    ballSpeedX,
-    ballSpeedY,
-    lives,
-    score,
-    bricks,
-  } = gameState;
+  const [paddleX, setPaddleX] = useState(200);
+  const [ballX, setBallX] = useState(240);
+  const [ballY, setBallY] = useState(100);
+  const [ballSpeedX, setBallSpeedX] = useState(1); // Adjust the value as needed
+  const [ballSpeedY, setBallSpeedY] = useState(1); // Adjust the value as needed
+  const [lives, setLives] = useState(3);
+  const [score, setScore] = useState(0);
+  const [bricks, setBricks] = useState([
+    { id: 1, x: 50, y: 50, width: 60, height: 20, color: 'red' },
+    { id: 2, x: 150, y: 50, width: 60, height: 20, color: 'blue' },
+    // Add more bricks here
+  ]);
 
   useEffect(() => {
     // Function to check collision between two rectangles
@@ -53,15 +35,10 @@ const App = () => {
       );
     };
 
-    // Function to remove a brick from the array
     const removeBrick = (brickId) => {
-     // Update ball and paddle positions
-setGameState((prevState) => ({
-  ...prevState,
-  ballX: prevState.ballX + ballSpeedX,
-  ballY: prevState.ballY + prevState.ballSpeedY, // Use prevState.ballSpeedY
-}));
-    }
+      setBricks((prevBricks) => prevBricks.filter((brick) => brick.id !== brickId));
+      setScore((prevScore) => prevScore + 10); // Increase score
+    };
 
     // Check for brick collisions and remove bricks
     bricks.forEach((brick) => {
@@ -75,33 +52,53 @@ setGameState((prevState) => ({
       const ballRect = {
         x: ballX,
         y: ballY,
-        width: 10, // Ball's width
-        height: 10, // Ball's height
+        width: 10,
+        height: 10,
       };
 
       if (isColliding(ballRect, brickRect)) {
         removeBrick(brick.id);
-        setGameState((prevState) => ({
-          ...prevState,
-          ballSpeedY: -prevState.ballSpeedY, // Bounce the ball
-        }));
+        setBallSpeedY((prevSpeedY) => -prevSpeedY); // Bounce the ball
       }
     });
 
-    // Check for game over condition
-    if (ballY > 640 && lives > 1) {
-      // Reset the ball and lose a life
-      setGameState((prevState) => ({
-        ...prevState,
-        ballX: 240,
-        ballY: 100,
-        ballSpeedY: 5,
-        lives: prevState.lives - 1,
-      }));
-    } else if (lives === 1 && ballY > 640) {
-      // Game over, no lives left
-      alert('Game Over! Your Score: ' + score);
-      // Implement more actions like restarting the game here if needed
+    // Check for wall collisions (left and right)
+    if (ballX <= 0 || ballX >= 470) {
+      setBallSpeedX((prevSpeedX) => -prevSpeedX); // Bounce off the walls
+    }
+
+    // Check for paddle collision
+    const paddleRect = {
+      x: paddleX,
+      y: 600,
+      width: 80,
+      height: 10,
+    };
+
+    const ballRect = {
+      x: ballX,
+      y: ballY,
+      width: 10,
+      height: 10,
+    };
+
+    if (isColliding(ballRect, paddleRect)) {
+      setBallSpeedY((prevSpeedY) => -prevSpeedY); // Bounce off the paddle
+    }
+
+    // Check if the ball falls below the paddle and reset it
+    if (ballY > 640) {
+      if (lives > 1) {
+        setBallX(240);
+        setBallY(100);
+        setBallSpeedY(5);
+        setLives((prevLives) => prevLives - 1);
+      } else {
+        // Game over, no lives left
+        alert('Game Over! Your Score: ' + score);
+        // Implement more actions like restarting the game here if needed
+        // You can add a function to restart the game here
+      }
     }
 
     // Check for victory condition
@@ -111,14 +108,8 @@ setGameState((prevState) => ({
     }
 
     // Update ball and paddle positions
-    setGameState((prevState) => ({
-      ...prevState,
-      ballX: prevState.ballX + ballSpeedX,
-      ballY: prevState.ballY + ballSpeedY,
-    }));
-
-    // Implement game restart
-    // You can add a function to restart the game here
+    setBallX((prevX) => prevX + ballSpeedX);
+    setBallY((prevY) => prevY + ballSpeedY);
 
   }, [ballX, ballY, ballSpeedX, ballSpeedY, paddleX, bricks, lives, score]);
 
